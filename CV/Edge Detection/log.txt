@@ -1,0 +1,2 @@
+Begin the log
+The shape of raw image:(797, 1275, 3)

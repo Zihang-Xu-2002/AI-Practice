@@ -1,3 +1,4 @@
+from turtle import width
 import cv2
 import numpy as np
 from PIL import Image
@@ -7,14 +8,8 @@ from cv2 import waitKey
 
 
 
-path = './img/hill.jpg'
-src=cv2.imread(path)
-cv2.imshow('raw image',src)
-cv2.waitKey(0)
-# image_src = Image.fromarray(cv2.cvtColor(src,cv2.COLOR_BGR2RGB))
-# display(image_src)
-print(type(src))
-print(src.shape)
+
+
 
 def grayscale_process(src,way=1):
     row,col,channel = src.shape
@@ -39,9 +34,9 @@ def grayscale_process(src,way=1):
 
 
 
-dst = grayscale_process(src,3)
-cv2.imshow("grayscale",dst) 
-cv2.waitKey(0)
+# dst = grayscale_process(src,3)
+# cv2.imshow("grayscale",dst) 
+# cv2.waitKey(0)
 
 def gaussian_kernel(size, sigma=1):
     half_size = int(size) // 2
@@ -70,14 +65,14 @@ def gaussian_kernel(size, sigma=1):
     gaussian_first_deriv_y=gaussian_first_deriv_y.T
     return gk,gaussian_first_deriv_x,gaussian_first_deriv_y
 
-gk,gd_x,gd_y=gaussian_kernel(5)
-print("----------------------")
-print("-----gk---------------")
-print(gk)
-print("-----gd_x-------------")
-print(gd_x)
-print("-----gd_y-------------")
-print(gd_y)
+# gk,gd_x,gd_y=gaussian_kernel(5)
+# print("----------------------")
+# print("-----gk---------------")
+# print(gk)
+# print("-----gd_x-------------")
+# print(gd_x)
+# print("-----gd_y-------------")
+# print(gd_y)
 
 def convolve(img,fil,mode = 'same'):                #分别提取三个通道
 
@@ -114,25 +109,18 @@ def wise_element_sum(img,fil):
         res  = 255
     return res
 
-img_gd_x = convolve(dst,50*gd_x,'same')
-img_gd_y = convolve(dst,50*gd_y,'same')
-G = np.hypot(img_gd_x, img_gd_y)
-G = G / G.max() * 255
-theta = np.arctan2(img_gd_y, img_gd_x)
+# img_gd_x = convolve(dst,50*gd_x,'same')
+# img_gd_y = convolve(dst,50*gd_y,'same')
+#
 
-print(img_gd_x)
-print(img_gd_y)
-print(img_gd_x.shape)
-cv2.imshow('img_gd_x',img_gd_x)
-cv2.imshow('img_gd_y',img_gd_y)
-#cv2.imshow('G',G)
-cv2.waitKey(0)
-
-print(type(G))
-print(G)
-mixed = G.astype("uint8")
-cv2.imshow("window",mixed)
-cv2.waitKey(0)
+#@gd_x
+#@gd_y
+#
+def calculate_value_and_arctan(gd_x,gd_y):
+    G = np.hypot(gd_x, gd_y)
+    G = G / G.max() * 255
+    theta = np.arctan2(gd_y, gd_x)
+    return G,theta
 
 def non_max_suppression(img, arc_angle):
     m,n = img.shape
@@ -174,10 +162,6 @@ def non_max_suppression(img, arc_angle):
     
     return Z
 
-img_NMS = non_max_suppression(mixed,theta)
-cv2.imshow("img_NMS",img_NMS)
-cv2.waitKey(0)
-print(type(img_NMS))
 
 def double_threshold(img,lowthresholdrate=0.05,highthresholdrate=0.11):
     HT=highthresholdrate*img.max()
@@ -212,11 +196,35 @@ def hysteresis(img, weak=25,strong=255):
                     pass
     return img
     
-img_DT = double_threshold(img_NMS)
-img_final = hysteresis(img_DT)
-print(type(img_final))
-img_canny = img_final.astype("uint8")
-plt.imshow(img_canny)
-plt.show()
-cv2.imshow('canny',img_canny)
-cv2.waitKey(0)
+def Canny_Detector():
+    path = './img/hill.jpg'
+    
+    src=cv2.imread(path)
+    
+    cv2.imwrite("./result/raw.jpg",src)
+    # cv2.imshow('raw image',src)
+    # cv2.waitKey(0)
+    f = open("./log.txt",'w')
+    print(type(src))
+    f.write("Begin the log\n")
+    f.write("The shape of raw image:"+str(src.shape)+'\n')
+
+############ OpenCV自带Canny检测 ##############################
+#     t_lower = 50  # Lower Threshold
+#     t_upper = 150  # Upper threshold
+  
+# # Applying the Canny Edge filter
+#     edge = cv2.Canny(src, t_lower, t_upper)
+#     cv2.imwrite("./result/hill_opencv_canny.jpg",edge)
+#     cv2.imshow('original', src)
+#     cv2.imshow('edge', edge)
+#     cv2.waitKey(0)
+#     cv2.destroyAllWindows()
+############ OpenCV自带Canny检测 ##############################
+
+    gray_src = grayscale_process(src,3)
+    cv2.imwrite("./result/hill_gray_3.jpg",gray_src)
+
+if __name__=="__main__":
+    Canny_Detector()
+
