@@ -5,6 +5,7 @@
 #include "Heuristic.h"
 #include <vector>
 #include <set>
+#include <stack>
 #include <queue>
 #include <map>
 

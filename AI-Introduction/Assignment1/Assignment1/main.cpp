@@ -19,6 +19,7 @@ void printStats(std::vector<std::pair<int, float>>& statistics)
 
 void doExperiment(int iteration, int problemSize, int suffleSteps, searchFunc searchFunc)
 {
+	std::cout << "Start to do experiment" << std::endl;
 	std::vector<std::pair<int, float>> statistics;
 
 	for (int i = 0; i < iteration; i++)
@@ -44,6 +45,7 @@ void doExperiment(int iteration, int problemSize, int suffleSteps, searchFunc se
 
 void testSearchFunction(searchFunc searchFunc)
 {
+	std::cout << "Start to test search function" << std::endl;
 	int iteration = 50;
 	int size = 3;
 	int suffleSteps = 30;
@@ -70,10 +72,10 @@ int main()
 {
 	std::srand((unsigned int) std::time(NULL)); // Generate a random seed
 	std::cout << "haihai" << std::endl;
-	//doExperiment(50, 3, 10, (searchFunc)search::bfs);
+	doExperiment(50, 3, 10, (searchFunc)search::bfs);
 
 	// 以下函数用于测试搜索函数结果的正确性
-	// testSearchFunction((searchFunc)search::bfs);
+	 testSearchFunction((searchFunc)search::bfs);
 	// testSearchFunction((searchFunc)search::dlsWrapper);
 	// testSearchFunction((searchFunc)search::aStarMisplace);
 	// testSearchFunction((searchFunc)search::aStarManhattan);

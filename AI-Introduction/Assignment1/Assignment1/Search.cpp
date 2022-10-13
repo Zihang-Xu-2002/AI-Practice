@@ -1,5 +1,5 @@
 ﻿#include "Search.h"
-
+#include<stack>
 namespace search
 {
 	Node childNode(Problem& problem, Node& parent, Action action, int stepCost)
@@ -106,7 +106,27 @@ namespace search
 		* Note:
 		* 需要使用problem.freeMemory(nodePtr)管理内存
 		*/
-		// TODO
+		std::vector<Action> tmp;
+		bool if_CUTTOF_occor = true;
+		if (problem.isGoal(node.state))
+		{
+			return std::vector<Action>();//之后注意一下这个应该什什么
+		}
+		else if (limit == 0)
+		{
+			return { Action::CUTOFF };
+		}
+		else
+		{
+			if_CUTTOF_occor = false;
+			std::stack<Node> SStack;
+			SStack.push(node);
+			for (Action action : problem.getValidActions(node.state))
+			{
+
+			}
+
+		}
 		return std::vector<Action>();
 	}
 

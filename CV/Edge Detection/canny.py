@@ -32,12 +32,6 @@ def grayscale_process(src,way=1):
     dst = img_gray.astype("uint8")
     return dst
 
-
-
-# dst = grayscale_process(src,3)
-# cv2.imshow("grayscale",dst) 
-# cv2.waitKey(0)
-
 def gaussian_kernel(size, sigma=1):
     half_size = int(size) // 2
     x, y = np.mgrid[-half_size:half_size+1, -half_size:half_size+1]
@@ -65,14 +59,10 @@ def gaussian_kernel(size, sigma=1):
     gaussian_first_deriv_y=gaussian_first_deriv_y.T
     return gk,gaussian_first_deriv_x,gaussian_first_deriv_y
 
-# gk,gd_x,gd_y=gaussian_kernel(5)
-# print("----------------------")
-# print("-----gk---------------")
-# print(gk)
-# print("-----gd_x-------------")
-# print(gd_x)
-# print("-----gd_y-------------")
-# print(gd_y)
+def sobel():
+    sobel_x = [[-1,0,1],[-2,0,2],[-1,0,1]]
+    sobel_y = [[-1,-2,-1],[0,0,0],[1,2,1]]
+    return sobel_x,sobel_y
 
 def convolve(img,fil,mode = 'same'):                #分别提取三个通道
 
@@ -87,13 +77,16 @@ def convolve(img,fil,mode = 'same'):                #分别提取三个通道
  
     #dstack = np.dstack([conv_b,conv_g,conv_r])      #将卷积后的三个通道合并
     return conv                                   #返回卷积后的结果
-def _convolve(img,fil):         
+def _convolve(img,fil):   
+
+    fil_heigh = 3
+    fil_width = 3      
      
-    fil_heigh = fil.shape[0]                        #获取卷积核(滤波)的高度
-    fil_width = fil.shape[1]                        #获取卷积核(滤波)的宽度
+    # fil_heigh = fil.shape[0]                        #获取卷积核(滤波)的高度
+    # fil_width = fil.shape[1]                        #获取卷积核(滤波)的宽度
    
-    conv_heigh = img.shape[0] - fil.shape[0] + 1    #确定卷积结果的大小
-    conv_width = img.shape[1] - fil.shape[1] + 1
+    conv_heigh = img.shape[0] - fil_heigh + 1    #确定卷积结果的大小
+    conv_width = img.shape[1] - fil_width + 1
 
     conv = np.zeros((conv_heigh,conv_width),dtype = 'uint8')
      
@@ -109,9 +102,7 @@ def wise_element_sum(img,fil):
         res  = 255
     return res
 
-# img_gd_x = convolve(dst,50*gd_x,'same')
-# img_gd_y = convolve(dst,50*gd_y,'same')
-#
+
 
 #@gd_x
 #@gd_y
@@ -134,22 +125,25 @@ def non_max_suppression(img, arc_angle):
                 q = 255
                 r = 255
                 
-               #angle 0
-                if (0 <= angle[i,j] < 22.5) or (157.5 <= angle[i,j] <= 180):
-                    q = img[i, j+1]
-                    r = img[i, j-1]
-                #angle 45
-                elif (22.5 <= angle[i,j] < 67.5):
+                                #angle 45
+                if (22.5 <= angle[i,j] < 67.5):
                     q = img[i+1, j-1]
                     r = img[i-1, j+1]
-                #angle 90
-                elif (67.5 <= angle[i,j] < 112.5):
-                    q = img[i+1, j]
-                    r = img[i-1, j]
+
                 #angle 135
                 elif (112.5 <= angle[i,j] < 157.5):
                     q = img[i-1, j-1]
                     r = img[i+1, j+1]
+                #angle 0
+                elif (0 <= angle[i,j] < 22.5) or (157.5 <= angle[i,j] <= 180):
+                    q = img[i, j+1]
+                    r = img[i, j-1]
+
+                #angle 90
+                elif (67.5 <= angle[i,j] < 112.5):
+                    q = img[i+1, j]
+                    r = img[i-1, j]
+
 
                 if (img[i,j] >= q) and (img[i,j] >= r):
                     Z[i,j] = img[i,j]
@@ -162,14 +156,22 @@ def non_max_suppression(img, arc_angle):
     
     return Z
 
-
-def double_threshold(img,lowthresholdrate=0.05,highthresholdrate=0.11):
+#hill : lowthresholdrate=0.06,highthresholdrate=0.6
+def double_threshold(img,lowthresholdrate=0.07,highthresholdrate=0.15):
     HT=highthresholdrate*img.max()
     LT=lowthresholdrate*img.max()
 
+    HT = 50
+    LT = 10
+
+
+
+    print("HT",HT)
+    print("LT",LT)
+
     m,n = img.shape
     result_DT=np.zeros((m,n))
-    img_low=25
+    img_low=50
     img_high=255
 
     strong_i,strong_j = np.where(img>=HT)
@@ -178,9 +180,10 @@ def double_threshold(img,lowthresholdrate=0.05,highthresholdrate=0.11):
 
     result_DT[strong_i,strong_j] = img_high
     result_DT[weak_i,weak_j] = img_low
+    result_DT[zeros_i,zeros_j]=0
     
     return result_DT
-def hysteresis(img, weak=25,strong=255):
+def hysteresis(img, weak=50,strong=255):
     M, N = img.shape  
     for i in range(1, M-1):
         for j in range(1, N-1):
@@ -197,15 +200,18 @@ def hysteresis(img, weak=25,strong=255):
     return img
     
 def Canny_Detector():
-    path = './img/hill.jpg'
+    #path = './img/hill.jpg'
+    path = './img/yw.jpg'
+    kernelsize = 3
     
     src=cv2.imread(path)
     
-    cv2.imwrite("./result/raw.jpg",src)
+    cv2.imwrite("./result/raw_yw.jpg",src)
     # cv2.imshow('raw image',src)
     # cv2.waitKey(0)
     f = open("./log.txt",'w')
     print(type(src))
+    f.write(path + '\n')
     f.write("Begin the log\n")
     f.write("The shape of raw image:"+str(src.shape)+'\n')
 
@@ -223,7 +229,54 @@ def Canny_Detector():
 ############ OpenCV自带Canny检测 ##############################
 
     gray_src = grayscale_process(src,3)
-    cv2.imwrite("./result/hill_gray_3.jpg",gray_src)
+    cv2.imwrite("./result/yw_gray_3.jpg",gray_src)
+    gk,gd_x,gd_y=gaussian_kernel(kernelsize)
+    f.write("---------image gradient-------------\n")
+    f.write("---------gaussian kernel-------------\n")
+    f.write(str(gk)+'\n')
+    f.write("---------G_x-------------\n")
+    f.write(str(gd_x)+'\n')
+    f.write("---------G_y-------------\n")
+    f.write(str(gd_y)+'\n')
+    f.write("---------image gradient-------------\n")
+    sobel_x,sobel_y = sobel()
+    img_smooth = convolve(gray_src,gk,'same')
+    # img_gd_x = convolve(img_smooth,50*gd_x,'same')
+    # img_gd_y = convolve(img_smooth,50*gd_y,'same')
+    img_gd_x = convolve(img_smooth,sobel_x,'same')
+    img_gd_y = convolve(img_smooth,sobel_y,'same')
+    #cv2.imwrite("./result/hill_gd_x.jpg",img_gd_x)
+    #cv2.imwrite("./result/hill_gd_y.jpg",img_gd_y)
+    cv2.imwrite("./result/yw_gd_x_sobel.jpg",img_gd_x)
+    cv2.imwrite("./result/yw_gd_y_sobel.jpg",img_gd_y)
+
+    G, theta = calculate_value_and_arctan(img_gd_x,img_gd_y)
+    # f.write("---------Gradient value-------------\n")
+    # f.write(str(G)+'\n')
+    # f.write("---------Gradient angle-------------\n")
+    # f.write(str(theta)+'\n')
+
+    gradient_img = G.astype("uint8")
+    #cv2.imwrite("./result/hill_gd_mix.jpg",gradient_img)
+    cv2.imwrite("./result/yw_gd_mix_sobel.jpg",gradient_img)
+
+    #below is NMS
+    print("begin NMS")
+    NMS_img = non_max_suppression(gradient_img,theta)
+    #cv2.imwrite("./result/hill_NMS.jpg",NMS_img)
+    cv2.imwrite("./result/yw_NMS_sobel.jpg",NMS_img)
+
+    #below is double threshold
+    DT_img = double_threshold(NMS_img)
+    #cv2.imwrite("./result/hill_DT.jpg",DT_img)
+    cv2.imwrite("./result/yw_DT_sobel.jpg",DT_img)
+    final_img = hysteresis(DT_img)
+    #cv2.imwrite("./result/hill_final.jpg",final_img)
+    cv2.imwrite("./result/yw_final_sobel.jpg",final_img)
+
+
+
+
 
 if __name__=="__main__":
     Canny_Detector()
