@@ -99,7 +99,11 @@ bool Problem::isSolution(std::vector<Action>& solution, std::vector<int> initSta
 	{
 		state = result(state, action);
 	}
-	if (isGoal(state)) return true;
+	if (isGoal(state))
+	{
+		//std::cout << "TRUE" << std::endl;
+		return true;
+	}
 
 	return false;
 }

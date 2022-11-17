@@ -40,7 +40,15 @@ int heuristic::misplace(std::vector<int>& state, std::vector<int>& goalState)
 		3.6 HEURISTIC FUNCTIONS
 	*/
 	// TODO
-	return 0;
+	int h_misplace = 0;
+	for (int i = 0; i < 9; i++)
+	{
+		if (state[i] != goalState[i])
+		{
+			h_misplace = h_misplace + 1;
+		}
+	}
+	return h_misplace;
 }
 
 int heuristic::manhattan(std::vector<int>& state, std::vector<int>& goalState)
@@ -66,5 +74,20 @@ int heuristic::manhattan(std::vector<int>& state, std::vector<int>& goalState)
 		3.6 HEURISTIC FUNCTIONS
 	*/
 	// TODO
-	return 0;
+	int h_manhattan = 0;
+	Position position0{}, position1{};
+	for (int it0 : state)
+	{
+		position0 = getPosition(9, it0);
+		for (int& it1 : goalState) 
+		{
+			if (state[it0] == it1) 
+			{
+				position1 = getPosition(9, it1);
+				h_manhattan += abs(position0.row - position1.row) + abs(position0.col - position1.col);
+				break;
+			}
+		}
+	}
+	return h_manhattan;
 }
