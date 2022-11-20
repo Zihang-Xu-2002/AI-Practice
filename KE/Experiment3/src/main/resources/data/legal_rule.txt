@@ -1,0 +1,5 @@
+PREFIX p: <http://www.reason/legal#>
+
+p:BelongTo(?B,?A) :- p:Relate(?A,?B) .
+p:Steal(?Z,?S) :- p:Relate(?X,?Y), p:Person(?Y,?Z), p:Thing(?Y,?S) .
+p:KeyTime(?C,?E) :- p:Relate(?C,?D), p:Time(?D,?E) .

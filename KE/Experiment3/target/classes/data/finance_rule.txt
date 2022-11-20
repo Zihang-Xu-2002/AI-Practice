@@ -1,0 +1,6 @@
+PREFIX p: <http://www.example.org/kse/finance#>
+PREFIX q: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+p:hold_share(?X,?Y):- p:control(?X,?Y) .
+p:conn_trans(?Y,?Z):- p:hold_share(?X,?Y), p:hold_share(?X,?Z) .
+p:subClassOf(?X,?Z):- p:subClassOf(?X,?Y), p:subClassOf(?Y,?Z) .
+q:type(?X,?Z):- q:type(?X, p:PublicCompany), p:subClassOf(p:PublicCompany,?Z) .
