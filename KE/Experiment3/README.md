@@ -1,6 +1,6 @@
 ### 说明
 
-####实验内容
+#### 实验内容
 主要是要学习已给代码，并编写新的规则。编写的规则在 ‘./src/main/resources/data/finance_rule.txt’和‘./src/main/resources/data/legal_rule.txt’里。同时对于‘./src/main/resources/data/legal_data.nt’也修改了，加入了新关系Keytime。
 
 #### 文件结构
