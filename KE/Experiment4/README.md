@@ -17,7 +17,7 @@
     │  │          
     │  └─resources
     │      ├─data
-    │      │      finance-data.nt // 实例数据
+    │      │      finance-data.nt // 实例数据 modified according to experiment4
     │      │      finance-onto.nt // 本体数据（格式为N-TRIPLE）
     │      │      finance-onto.owl // 本体数据（格式为OWL，内容与上一个相同）
     │      │      finance.drl // Drools规则文件
