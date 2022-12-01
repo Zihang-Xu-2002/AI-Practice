@@ -1,0 +1,11 @@
+<http://www.example.org/kse/finance#张三> <http://www.example.org/kse/finance#worksFor> <http://www.example.org/kse/finance#万达集团> .
+<http://www.example.org/kse/finance#李四> <http://www.example.org/kse/finance#worksFor> <http://www.example.org/kse/finance#万达集团> .
+<http://www.example.org/kse/finance#张三> <http://www.example.org/kse/finance#employeeOf> <http://www.example.org/kse/finance#万达集团> .
+
+<http://www.example.org/kse/finance#peter> <http://www.example.org/kse/finance#firstName> "Peter" .
+<http://www.example.org/kse/finance#peter> <http://www.example.org/kse/finance#lastName> "Green" .
+
+<http://www.example.org/kse/finance#company1> <http://www.example.org/kse/finance#type> <http://www.example.org/kse/finance#Company> .
+<http://www.example.org/kse/finance#company1> <http://www.example.org/kse/finance#MarchStock> "100"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://www.example.org/kse/finance#company1> <http://www.example.org/kse/finance#AprilStock> "500"^^<http://www.w3.org/2001/XMLSchema#integer> .
+

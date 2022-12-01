@@ -100,7 +100,21 @@ double DecisionTree::info_gain(string attribute, vector<Example> examples)
     * 公式：
     * Gain(attribute) = entropy_binary(p / (p + n)) - entropy_remain(attribute, examples)
     */
-    return 0.0;
+    double p = 0, n = 0;
+    for (Example example : examples)
+    {
+        if (example.label)
+        {
+            p = p + 1;
+        }
+        else
+        {
+            n = n + 1;
+        }
+    }
+
+    double Gain = entropy_binary(p / (p + n)) - entropy_remain(attribute, examples);
+    return Gain;
 }
 
 string DecisionTree::importance(vector<string> attributes, vector<Example> examples)
@@ -114,8 +128,19 @@ string DecisionTree::importance(vector<string> attributes, vector<Example> examp
     * 此时attr应该为"PATRONS"
     * Note: attributes.size() > 0
     */
+    double max = 0;
+    string chosen_attr = " ";
 
-    return attributes[0];
+    for (string attr : attributes)
+    {
+        double temp = info_gain(attr, examples);
+        if (temp > max || max == 0)
+        {
+            max = temp;
+            chosen_attr = attr;
+        }
+    }
+    return chosen_attr;
 }
 
 vector<string> DecisionTree::remove_attribute(vector<string> attributes, string attribute)
@@ -148,7 +173,36 @@ TreeNode* DecisionTree::learn(vector<Example> examples, vector<string> attribute
         return tree
     * NOTE: 如果信息增益函数正确，通过训练集得到的决策树的第一个分类属性应该为PATRONS
     */
-    return new TreeNode(true);
+    if (examples.empty())
+    {
+        return plurality_value(parent_examples);
+    }
+    else if (have_same_class(examples))
+    {
+        TreeNode* tree = new TreeNode(examples[0].label);
+        return tree;
+    }
+    else if (attributes.empty())
+    {
+        return plurality_value(examples);
+    }
+    else
+    {
+        map<string, set<string>> attributes_options = util::get_attributes_options();
+        string A = importance(attributes, examples);
+        TreeNode* tree = new TreeNode(A);
+        for (string v_k : attributes_options[A])
+        {
+            vector<Example> exs = get_examples(examples, A, v_k);
+            if (exs.empty())
+            {
+                return plurality_value(parent_examples);
+            }
+            TreeNode* subtree = learn(exs, remove_attribute(attributes, A), examples);
+            tree->options[v_k] = subtree;
+        }
+        return tree;
+    }
 }
 
 int DecisionTree::classify_rec(Example& example, TreeNode* root)
@@ -165,7 +219,11 @@ int DecisionTree::classify_rec(Example& example, TreeNode* root)
     *   let child = root->options[v_k]
     *   return classify_rec(example, child)
     */
-    return 0;
+    if (root->attribute == util::LABEL_ATTRIBUTE) return root->value;
+    int index = util::get_attribute_index(root->attribute);
+    string v_k = example.data[index];
+    TreeNode* child = root->options[v_k];
+    return classify_rec(example, child);
 }
 
 vector<int> DecisionTree::classify(vector<vector<string>> test_raw_values)
